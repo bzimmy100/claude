@@ -58,8 +58,14 @@ Alles draait in één Next.js-app; de Sanity Studio zit ingebouwd op `/studio`.
 5. **Starten**
 
    ```bash
-   npm run dev
+   npm run demo
    ```
+
+   `npm run demo` draait de site in productie-modus: snel en zonder
+   zichtbaar herladen bij elke wijziging — gebruik dit voor de demo zelf.
+   Gebruik `npm run dev` alleen als je aan de code werkt (na een
+   `git pull` met codewijzigingen eerst opnieuw `npm run demo` starten,
+   die bouwt de nieuwe code automatisch).
 
    | URL | Wat |
    | --- | --- |
