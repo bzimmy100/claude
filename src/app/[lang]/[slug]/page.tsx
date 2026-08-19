@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { PageBuilder } from "@/components/PageBuilder";
+import { PageClient } from "@/components/PageClient";
 import { sanityFetch } from "@/sanity/lib/live";
 import { PAGE_QUERY } from "@/sanity/lib/queries";
 import type { PageDoc } from "@/sanity/lib/types";
@@ -12,16 +12,18 @@ export default async function SubPage({
   params: Promise<{ lang: string; slug: string }>;
 }) {
   const { lang, slug } = await params;
+  const queryParams = { market: "eu", language: lang, slug };
   const { data } = await sanityFetch({
     query: PAGE_QUERY,
-    params: { market: "eu", language: lang, slug },
+    params: queryParams,
   });
-  const page = data as PageDoc;
-  if (!page) notFound();
+  if (!data) notFound();
 
   return (
-    <PageBuilder
-      blocks={page.pageBuilder}
+    <PageClient
+      initial={data as PageDoc}
+      query={PAGE_QUERY}
+      params={queryParams}
       variant="eu"
       lang={lang as "nl" | "en"}
       base={`/${lang}`}

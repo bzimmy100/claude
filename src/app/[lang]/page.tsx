@@ -1,4 +1,4 @@
-import { PageBuilder } from "@/components/PageBuilder";
+import { PageClient } from "@/components/PageClient";
 import { sanityFetch } from "@/sanity/lib/live";
 import { PAGE_QUERY } from "@/sanity/lib/queries";
 import type { PageDoc } from "@/sanity/lib/types";
@@ -11,15 +11,17 @@ export default async function HomePage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
+  const queryParams = { market: "eu", language: lang, slug: "home" };
   const { data } = await sanityFetch({
     query: PAGE_QUERY,
-    params: { market: "eu", language: lang, slug: "home" },
+    params: queryParams,
   });
-  const page = data as PageDoc;
 
   return (
-    <PageBuilder
-      blocks={page?.pageBuilder}
+    <PageClient
+      initial={data as PageDoc}
+      query={PAGE_QUERY}
+      params={queryParams}
       variant="eu"
       lang={lang as "nl" | "en"}
       base={`/${lang}`}

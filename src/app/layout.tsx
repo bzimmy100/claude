@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
+import { LiveGate } from "@/components/LiveGate";
 import { SanityLive } from "@/sanity/lib/live";
 import "./globals.css";
 
@@ -17,7 +18,9 @@ export default async function RootLayout({
     <html lang="nl">
       <body>
         {children}
-        <SanityLive />
+        <LiveGate>
+          <SanityLive />
+        </LiveGate>
         {isDraftMode && <VisualEditing />}
       </body>
     </html>
