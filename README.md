@@ -115,5 +115,22 @@ src/app/studio          ingebouwde Sanity Studio
 scripts/seed.mjs        demo-content (npm run seed)
 ```
 
+## Online zetten (testdomein)
+
+1. Op [vercel.com](https://vercel.com): inloggen met GitHub → *Add New →
+   Project* → deze repo kiezen.
+2. Environment variables invullen (zelfde als `.env`); laat
+   `NEXT_PUBLIC_SITE_ENV` weg zolang het een testomgeving is — dan
+   blokkeert robots.txt automatisch alle zoekmachines.
+3. Settings → Domains → `sunbooster.beeldfanaat.dev` toevoegen en in het
+   DNS-beheer van beeldfanaat.dev een CNAME `sunbooster` →
+   `cname.vercel-dns.com` aanmaken.
+4. Op sanity.io/manage → API → CORS origins:
+   `https://sunbooster.beeldfanaat.dev` toevoegen (met credentials).
+
+Livegang is daarna alleen: het echte domein aan hetzelfde project
+koppelen, `NEXT_PUBLIC_SITE_ENV=production` zetten en de redirect-map
+activeren — de content staat al goed in Sanity.
+
 > **Let op:** het API-token hoort alleen in `.env` (staat in `.gitignore`).
 > Commit het nooit, en trek het in via sanity.io/manage als het ooit lekt.
