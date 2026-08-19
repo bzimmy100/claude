@@ -183,6 +183,13 @@ export function ImageTextBlock({
   );
 }
 
+const FEATURE_GRID_BACKGROUNDS: Record<string, string> = {
+  sky: "bg-sky",
+  cream: "bg-cream",
+  sun: "bg-sun/15",
+  navy: "bg-navy",
+};
+
 export function FeatureGrid({
   block,
   variant,
@@ -191,6 +198,7 @@ export function FeatureGrid({
   block: {
     title?: LocaleString;
     intro?: LocaleString;
+    background?: string;
     items?: {
       _key: string;
       emoji?: string;
@@ -203,12 +211,23 @@ export function FeatureGrid({
 }) {
   const title = loc(block.title, lang);
   const intro = loc(block.intro, lang);
+  const background =
+    FEATURE_GRID_BACKGROUNDS[block.background ?? "sky"] ?? "bg-sky";
+  const dark = block.background === "navy";
   return (
-    <section className="bg-sky px-6 py-16">
+    <section className={`${background} px-6 py-16`}>
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
-          {title && <h2 className="text-3xl font-bold">{title}</h2>}
-          {intro && <p className="mt-3 text-ink/70">{intro}</p>}
+          {title && (
+            <h2 className={`text-3xl font-bold ${dark ? "text-white" : ""}`}>
+              {title}
+            </h2>
+          )}
+          {intro && (
+            <p className={`mt-3 ${dark ? "text-white/70" : "text-ink/70"}`}>
+              {intro}
+            </p>
+          )}
         </div>
         <div
           className={`mt-10 grid gap-6 ${

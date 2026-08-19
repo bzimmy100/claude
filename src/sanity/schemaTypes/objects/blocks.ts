@@ -100,6 +100,22 @@ export const featureGrid = defineType({
     defineField({ name: "title", title: "Titel", type: "localeString" }),
     defineField({ name: "intro", title: "Intro", type: "localeText" }),
     defineField({
+      name: "background",
+      title: "Achtergrondkleur",
+      type: "string",
+      options: {
+        list: [
+          { title: "Lichtblauw", value: "sky" },
+          { title: "Crème", value: "cream" },
+          { title: "Zongeel", value: "sun" },
+          { title: "Donker", value: "navy" },
+        ],
+        layout: "radio",
+        direction: "horizontal",
+      },
+      initialValue: "sky",
+    }),
+    defineField({
       name: "items",
       title: "Voordelen",
       type: "array",
