@@ -819,34 +819,33 @@ function buildDocs(pic) {
   return docs;
 }
 
-/* Documenten van de vorige seed-opzet (losse NL/EN-pagina's) opruimen. */
-const OLD_IDS = [
-  "translation-home",
-  "translation-science",
-  "translation-how",
-  "translation-faq",
-  "page-eu-home-nl",
-  "page-eu-home-en",
-  "page-eu-science-nl",
-  "page-eu-science-en",
-  "page-eu-how-nl",
-  "page-eu-how-en",
-  "page-eu-faq-nl",
-  "page-eu-faq-en",
-];
-
 /* -- uitvoeren ---------------------------------------------------------- */
 
 console.log("SunBooster-demo seeden naar project", client.config().projectId);
 console.log("→ afbeeldingen uploaden…");
 const pic = await uploadImages();
 
-console.log("→ documenten schrijven…");
 const docs = buildDocs(pic);
+
+/* Alles wat niet bij de demo hoort gaat weg: oude seed-versies, losse
+   concepten (drafts) en zwerfdocumenten. Zo geeft elke seed-run een
+   gegarandeerd schone beginstand — ook voor en na het oefenen. */
+console.log("→ oude documenten en concepten opruimen…");
+const keep = new Set(docs.map((doc) => doc._id));
+const existingIds = await client.fetch(
+  '*[_type in ["page", "article", "siteSettings", "translation.metadata"]]._id',
+  {},
+  { perspective: "raw" }
+);
 let tx = client.transaction();
-for (const id of OLD_IDS) {
-  tx = tx.delete(id).delete(`drafts.${id}`);
+for (const id of existingIds) {
+  const bareId = id.replace(/^drafts\./, "");
+  if (keep.has(bareId)) continue;
+  tx = tx.delete(id);
+  console.log(`  ✖ verwijderd: ${id}`);
 }
+
+console.log("→ documenten schrijven…");
 for (const doc of docs) {
   tx = tx.createOrReplace(doc).delete(`drafts.${doc._id}`);
 }
