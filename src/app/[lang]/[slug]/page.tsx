@@ -20,6 +20,11 @@ export default async function SubPage({
   if (!page) notFound();
 
   return (
-    <PageBuilder blocks={page.pageBuilder} variant="eu" base={`/${lang}`} />
+    <PageBuilder
+      blocks={page.pageBuilder}
+      variant="eu"
+      lang={lang as "nl" | "en"}
+      base={`/${lang}`}
+    />
   );
 }

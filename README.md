@@ -5,8 +5,13 @@ Demo-website op basis van [Sanity](https://www.sanity.io) voor
 
 - **Blokken (page builder)** — pagina's opgebouwd uit versleepbare secties
   (hero, voordelen, cijfers, reviews, FAQ, call-to-action, artikelen)
-- **Meertaligheid NL → EN** — dezelfde site, gekoppelde vertalingen per
-  document, elk met een eigen slug (`/nl/wetenschap` ↔ `/en/science`)
+- **Meertaligheid NL → EN, per veld** — NL is de hoofdtaal; onder elk
+  NL-veld staat het EN-veld. Voeg je een sectie toe, dan staat die
+  automatisch in beide talen — alleen de inhoud hoeft vertaald. EN valt
+  terug op NL zolang er nog geen vertaling is. Slugs mogen per taal
+  verschillen (`/nl/wetenschap` ↔ `/en/science`). Artikelen tonen het
+  andere model: losse gekoppelde documenten per taal (een artikel hoeft
+  niet in alle talen te bestaan)
 - **Aparte US-site** — zelfde CMS, maar een eigen site met een eigen
   indeling én uitstraling (`/us`), niet alleen andere tekst
 - **Live preview** — de Presentation-tool in de studio toont wijzigingen
@@ -72,10 +77,13 @@ Alles draait in één Next.js-app; de Sanity Studio zit ingebouwd op `/studio`.
    (verrekijker-icoon). Links de editor, rechts de site. Pas de hero-titel
    aan en laat zien dat de preview live meebeweegt; klik in de preview op
    een tekst om er direct naartoe te springen.
-3. **Vertalen NL → EN** — open een NL-pagina en klik rechtsboven op het
-   taalmenu (wereldbol/Translations). De EN-versie is gekoppeld: zelfde
-   opbouw, eigen tekst én een eigen slug (`/nl/wetenschap` vs
-   `/en/science`). Wissel op de site met de NL/EN-knop.
+3. **Vertalen NL → EN** — open een pagina: onder elk NL-veld staat het
+   EN-veld. Voeg een nieuw blok toe en laat zien dat het meteen op
+   `/nl` én `/en` staat (EN valt terug op NL tot je vertaalt) — beheer
+   is dus één keer werk, alleen de inhoud wordt vertaald. Wissel op de
+   site met de NL/EN-knop. Bij *Artikelen* zie je het andere model:
+   losse documenten per taal, gekoppeld via het taalmenu bovenin —
+   handig voor content die niet in elke taal hoeft te bestaan.
 4. **De US-site** — Studio → *US-site*. Zelfde contenttypes en blokken,
    maar een andere site: eigen pagina's, andere blokvolgorde, en op
    `/us` een eigen layout (donkere navigatie, andere hero, andere
@@ -91,8 +99,9 @@ Alles draait in één Next.js-app; de Sanity Studio zit ingebouwd op `/studio`.
 
 ```
 sanity.config.ts        studio-configuratie (plugins: structure, presentation,
-                        document-internationalization, vision)
+                        document-internationalization (artikelen), vision)
 src/sanity/schemaTypes  contenttypes: page, article, siteSettings + blokken
+                        (objects/locale.ts = de NL/EN-velden per veld)
 src/sanity/lib          client, live fetch, GROQ-query's, image-helper
 src/app/[lang]          hoofdsite NL/EN
 src/app/us              US-site met eigen layout/thema

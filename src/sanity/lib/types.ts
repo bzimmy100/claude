@@ -25,3 +25,11 @@ export type ArticleDoc = {
 export type SettingsDoc = { siteTitle?: string; tagline?: string } | null;
 
 export type NavPage = { _id: string; title?: string; slug?: string };
+
+/* Ruwe menu-data uit Sanity, vóór het kiezen van de taal. */
+export type NavPageRaw = {
+  _id: string;
+  title?: { nl?: string; en?: string };
+  slug?: string;
+  slugEn?: string | null;
+};

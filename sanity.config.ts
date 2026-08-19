@@ -25,12 +25,14 @@ export default defineConfig({
         previewMode: { enable: "/api/draft-mode/enable" },
       },
     }),
+    /* Alleen artikelen gebruiken losse documenten per taal; pagina's
+       vertalen per veld (NL/EN onder elkaar in hetzelfde document). */
     documentInternationalization({
       supportedLanguages: [
         { id: "nl", title: "Nederlands" },
         { id: "en", title: "English" },
       ],
-      schemaTypes: ["page", "article"],
+      schemaTypes: ["article"],
     }),
     visionTool({ defaultApiVersion: apiVersion }),
   ],

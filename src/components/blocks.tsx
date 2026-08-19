@@ -1,28 +1,39 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { PortableTextBlock } from "next-sanity";
 import { urlFor } from "@/sanity/lib/image";
+import {
+  loc,
+  locRich,
+  type Lang,
+  type LocaleRichText,
+  type LocaleString,
+} from "@/sanity/lib/locale";
 import { RichText } from "./RichText";
 
 /* Alle blok-componenten. Elke component kent twee smaken:
-   variant "eu" (hoofdsite) en "us" (US-site, eigen indeling). */
+   variant "eu" (hoofdsite) en "us" (US-site, eigen indeling).
+   Tekstvelden zijn locale-velden; `lang` bepaalt welke taal je ziet. */
 
 export type Variant = "eu" | "us";
 
-type Cta = { label?: string; href?: string };
+type Cta = { label?: LocaleString; href?: LocaleString };
 type SanityImg = { asset?: { _ref?: string } } & Record<string, unknown>;
 
 function CtaButton({
   cta,
+  lang,
   kind = "primary",
   base = "",
 }: {
   cta?: Cta;
+  lang: Lang;
   kind?: "primary" | "secondary";
   base?: string;
 }) {
-  if (!cta?.label) return null;
-  const href = cta.href?.startsWith("/") ? `${base}${cta.href}` : (cta.href ?? "#");
+  const label = loc(cta?.label, lang);
+  if (!label) return null;
+  const rawHref = loc(cta?.href, lang) ?? "#";
+  const href = rawHref.startsWith("/") ? `${base}${rawHref}` : rawHref;
   const styles =
     kind === "primary"
       ? "bg-sun text-white hover:bg-sun-deep"
@@ -32,7 +43,7 @@ function CtaButton({
       href={href}
       className={`inline-block rounded-full px-6 py-3 text-sm font-semibold transition ${styles}`}
     >
-      {cta.label}
+      {label}
     </Link>
   );
 }
@@ -40,43 +51,52 @@ function CtaButton({
 export function Hero({
   block,
   variant,
+  lang,
   base,
 }: {
   block: {
-    kicker?: string;
-    title?: string;
-    text?: string;
+    kicker?: LocaleString;
+    title?: LocaleString;
+    text?: LocaleString;
     image?: SanityImg;
     primaryCta?: Cta;
     secondaryCta?: Cta;
   };
   variant: Variant;
+  lang: Lang;
   base: string;
 }) {
+  const kicker = loc(block.kicker, lang);
+  const title = loc(block.title, lang);
+  const text = loc(block.text, lang);
+
   if (variant === "us") {
     /* US: donkere, volle breedte-hero met gecentreerde tekst. */
     return (
       <section className="bg-navy px-6 py-24 text-center text-white">
         <div className="mx-auto max-w-3xl">
-          {block.kicker && (
+          {kicker && (
             <p className="mb-4 text-sm font-bold tracking-widest text-sun uppercase">
-              {block.kicker}
+              {kicker}
             </p>
           )}
-          <h1 className="text-4xl font-bold sm:text-6xl">{block.title}</h1>
-          {block.text && (
-            <p className="mx-auto mt-6 max-w-xl text-lg text-white/70">
-              {block.text}
-            </p>
+          <h1 className="text-4xl font-bold sm:text-6xl">{title}</h1>
+          {text && (
+            <p className="mx-auto mt-6 max-w-xl text-lg text-white/70">{text}</p>
           )}
           <div className="mt-8 flex justify-center gap-4">
-            <CtaButton cta={block.primaryCta} base={base} />
-            <CtaButton cta={block.secondaryCta} kind="secondary" base={base} />
+            <CtaButton cta={block.primaryCta} lang={lang} base={base} />
+            <CtaButton
+              cta={block.secondaryCta}
+              lang={lang}
+              kind="secondary"
+              base={base}
+            />
           </div>
           {block.image && (
             <Image
               src={urlFor(block.image).width(1600).url()}
-              alt={block.title ?? ""}
+              alt={title ?? ""}
               width={1600}
               height={900}
               className="mx-auto mt-12 w-full max-w-3xl rounded-3xl"
@@ -93,26 +113,29 @@ export function Hero({
     <section className="px-6 pt-16 pb-20">
       <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
         <div>
-          {block.kicker && (
+          {kicker && (
             <p className="mb-4 text-sm font-bold tracking-widest text-sun-deep uppercase">
-              {block.kicker}
+              {kicker}
             </p>
           )}
           <h1 className="text-4xl leading-tight font-bold sm:text-5xl">
-            {block.title}
+            {title}
           </h1>
-          {block.text && (
-            <p className="mt-5 max-w-lg text-lg text-ink/70">{block.text}</p>
-          )}
+          {text && <p className="mt-5 max-w-lg text-lg text-ink/70">{text}</p>}
           <div className="mt-8 flex flex-wrap gap-4">
-            <CtaButton cta={block.primaryCta} base={base} />
-            <CtaButton cta={block.secondaryCta} kind="secondary" base={base} />
+            <CtaButton cta={block.primaryCta} lang={lang} base={base} />
+            <CtaButton
+              cta={block.secondaryCta}
+              lang={lang}
+              kind="secondary"
+              base={base}
+            />
           </div>
         </div>
         {block.image && (
           <Image
             src={urlFor(block.image).width(1200).url()}
-            alt={block.title ?? ""}
+            alt={title ?? ""}
             width={1200}
             height={900}
             className="w-full rounded-3xl shadow-xl shadow-sun/20"
@@ -126,28 +149,30 @@ export function Hero({
 
 export function ImageTextBlock({
   block,
+  lang,
 }: {
   block: {
-    title?: string;
-    body?: PortableTextBlock[];
+    title?: LocaleString;
+    body?: LocaleRichText;
     image?: SanityImg;
     imagePosition?: string;
   };
+  lang: Lang;
 }) {
   const imageLeft = block.imagePosition === "links";
+  const title = loc(block.title, lang);
+  const body = locRich(block.body, lang);
   return (
     <section className="px-6 py-16">
       <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
         <div className={imageLeft ? "md:order-2" : ""}>
-          {block.title && (
-            <h2 className="mb-4 text-3xl font-bold">{block.title}</h2>
-          )}
-          {block.body && <RichText value={block.body} />}
+          {title && <h2 className="mb-4 text-3xl font-bold">{title}</h2>}
+          {body && <RichText value={body} />}
         </div>
         {block.image && (
           <Image
             src={urlFor(block.image).width(1200).url()}
-            alt={block.title ?? ""}
+            alt={title ?? ""}
             width={1200}
             height={900}
             className={`w-full rounded-3xl ${imageLeft ? "md:order-1" : ""}`}
@@ -161,20 +186,29 @@ export function ImageTextBlock({
 export function FeatureGrid({
   block,
   variant,
+  lang,
 }: {
   block: {
-    title?: string;
-    intro?: string;
-    items?: { _key: string; emoji?: string; title?: string; text?: string }[];
+    title?: LocaleString;
+    intro?: LocaleString;
+    items?: {
+      _key: string;
+      emoji?: string;
+      title?: LocaleString;
+      text?: LocaleString;
+    }[];
   };
   variant: Variant;
+  lang: Lang;
 }) {
+  const title = loc(block.title, lang);
+  const intro = loc(block.intro, lang);
   return (
     <section className="bg-sky px-6 py-16">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
-          {block.title && <h2 className="text-3xl font-bold">{block.title}</h2>}
-          {block.intro && <p className="mt-3 text-ink/70">{block.intro}</p>}
+          {title && <h2 className="text-3xl font-bold">{title}</h2>}
+          {intro && <p className="mt-3 text-ink/70">{intro}</p>}
         </div>
         <div
           className={`mt-10 grid gap-6 ${
@@ -196,9 +230,9 @@ export function FeatureGrid({
                 )}
               </div>
               <div>
-                <h3 className="mt-2 font-bold">{item.title}</h3>
+                <h3 className="mt-2 font-bold">{loc(item.title, lang)}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-ink/70">
-                  {item.text}
+                  {loc(item.text, lang)}
                 </p>
               </div>
             </div>
@@ -211,20 +245,26 @@ export function FeatureGrid({
 
 export function Stats({
   block,
+  lang,
 }: {
-  block: { title?: string; items?: { _key: string; value?: string; label?: string }[] };
+  block: {
+    title?: LocaleString;
+    items?: { _key: string; value?: LocaleString; label?: LocaleString }[];
+  };
+  lang: Lang;
 }) {
+  const title = loc(block.title, lang);
   return (
     <section className="px-6 py-16">
       <div className="mx-auto max-w-6xl text-center">
-        {block.title && <h2 className="text-3xl font-bold">{block.title}</h2>}
+        {title && <h2 className="text-3xl font-bold">{title}</h2>}
         <div className="mt-10 grid gap-8 sm:grid-cols-3">
           {block.items?.map((item) => (
             <div key={item._key}>
               <div className="text-5xl font-bold text-sun-deep">
-                {item.value}
+                {loc(item.value, lang)}
               </div>
-              <p className="mt-2 text-sm text-ink/70">{item.label}</p>
+              <p className="mt-2 text-sm text-ink/70">{loc(item.label, lang)}</p>
             </div>
           ))}
         </div>
@@ -235,29 +275,35 @@ export function Stats({
 
 export function Testimonials({
   block,
+  lang,
 }: {
   block: {
-    title?: string;
-    items?: { _key: string; quote?: string; name?: string; role?: string }[];
+    title?: LocaleString;
+    items?: {
+      _key: string;
+      quote?: LocaleString;
+      name?: string;
+      role?: LocaleString;
+    }[];
   };
+  lang: Lang;
 }) {
+  const title = loc(block.title, lang);
   return (
     <section className="bg-sky px-6 py-16">
       <div className="mx-auto max-w-6xl">
-        {block.title && (
-          <h2 className="text-center text-3xl font-bold">{block.title}</h2>
-        )}
+        {title && <h2 className="text-center text-3xl font-bold">{title}</h2>}
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {block.items?.map((item) => (
             <figure key={item._key} className="rounded-2xl bg-white p-6 shadow-sm">
               <blockquote className="text-sm leading-relaxed text-ink/80">
-                “{item.quote}”
+                “{loc(item.quote, lang)}”
               </blockquote>
               <figcaption className="mt-4 text-sm font-semibold">
                 {item.name}
-                {item.role && (
+                {loc(item.role, lang) && (
                   <span className="block font-normal text-ink/50">
-                    {item.role}
+                    {loc(item.role, lang)}
                   </span>
                 )}
               </figcaption>
@@ -271,34 +317,44 @@ export function Testimonials({
 
 export function Faq({
   block,
+  lang,
 }: {
   block: {
-    title?: string;
-    items?: { _key: string; question?: string; answer?: PortableTextBlock[] }[];
+    title?: LocaleString;
+    items?: {
+      _key: string;
+      question?: LocaleString;
+      answer?: LocaleRichText;
+    }[];
   };
+  lang: Lang;
 }) {
+  const title = loc(block.title, lang);
   return (
     <section className="px-6 py-16">
       <div className="mx-auto max-w-3xl">
-        {block.title && (
-          <h2 className="mb-8 text-center text-3xl font-bold">{block.title}</h2>
+        {title && (
+          <h2 className="mb-8 text-center text-3xl font-bold">{title}</h2>
         )}
         <div className="space-y-3">
-          {block.items?.map((item) => (
-            <details
-              key={item._key}
-              className="group rounded-2xl bg-white p-5 shadow-sm"
-            >
-              <summary className="cursor-pointer list-none font-semibold marker:hidden">
-                {item.question}
-              </summary>
-              {item.answer && (
-                <div className="mt-3">
-                  <RichText value={item.answer} />
-                </div>
-              )}
-            </details>
-          ))}
+          {block.items?.map((item) => {
+            const answer = locRich(item.answer, lang);
+            return (
+              <details
+                key={item._key}
+                className="group rounded-2xl bg-white p-5 shadow-sm"
+              >
+                <summary className="cursor-pointer list-none font-semibold marker:hidden">
+                  {loc(item.question, lang)}
+                </summary>
+                {answer && (
+                  <div className="mt-3">
+                    <RichText value={answer} />
+                  </div>
+                )}
+              </details>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -307,28 +363,29 @@ export function Faq({
 
 export function CtaBanner({
   block,
+  lang,
   base,
 }: {
-  block: { title?: string; text?: string; cta?: Cta };
+  block: { title?: LocaleString; text?: LocaleString; cta?: Cta };
+  lang: Lang;
   base: string;
 }) {
+  const title = loc(block.title, lang);
+  const text = loc(block.text, lang);
+  const label = loc(block.cta?.label, lang);
+  const rawHref = loc(block.cta?.href, lang) ?? "#";
+  const href = rawHref.startsWith("/") ? `${base}${rawHref}` : rawHref;
   return (
     <section className="px-6 py-16">
       <div className="mx-auto max-w-6xl rounded-3xl bg-sun px-8 py-14 text-center text-white">
-        <h2 className="text-3xl font-bold">{block.title}</h2>
-        {block.text && (
-          <p className="mx-auto mt-3 max-w-xl text-white/85">{block.text}</p>
-        )}
-        {block.cta?.label && (
+        <h2 className="text-3xl font-bold">{title}</h2>
+        {text && <p className="mx-auto mt-3 max-w-xl text-white/85">{text}</p>}
+        {label && (
           <Link
-            href={
-              block.cta.href?.startsWith("/")
-                ? `${base}${block.cta.href}`
-                : (block.cta.href ?? "#")
-            }
+            href={href}
             className="mt-7 inline-block rounded-full bg-white px-7 py-3 text-sm font-semibold text-sun-deep transition hover:scale-105"
           >
-            {block.cta.label}
+            {label}
           </Link>
         )}
       </div>
@@ -338,10 +395,11 @@ export function CtaBanner({
 
 export function ArticleList({
   block,
+  lang,
   base,
 }: {
   block: {
-    title?: string;
+    title?: LocaleString;
     max?: number;
     articles?: {
       _id: string;
@@ -351,13 +409,15 @@ export function ArticleList({
       coverImage?: SanityImg;
     }[];
   };
+  lang: Lang;
   base: string;
 }) {
+  const title = loc(block.title, lang);
   const articles = block.articles?.slice(0, block.max ?? 3) ?? [];
   return (
     <section className="px-6 py-16">
       <div className="mx-auto max-w-6xl">
-        {block.title && <h2 className="text-3xl font-bold">{block.title}</h2>}
+        {title && <h2 className="text-3xl font-bold">{title}</h2>}
         <div className="mt-8 grid gap-6 md:grid-cols-3">
           {articles.map((article) => (
             <Link

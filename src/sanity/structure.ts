@@ -7,19 +7,11 @@ export const structure: StructureResolver = (S) =>
     .title("Content")
     .items([
       S.listItem()
-        .title("Hoofdsite · Nederlands")
+        .title("Hoofdsite · Pagina's (NL/EN)")
         .child(
           S.documentTypeList("page")
-            .title("Pagina's (NL)")
-            .filter('_type == "page" && market == "eu" && language == "nl"')
-            .apiVersion("2025-02-19")
-        ),
-      S.listItem()
-        .title("Hoofdsite · English")
-        .child(
-          S.documentTypeList("page")
-            .title("Pages (EN)")
-            .filter('_type == "page" && market == "eu" && language == "en"')
+            .title("Pagina's — vertaling per veld")
+            .filter('_type == "page" && market == "eu"')
             .apiVersion("2025-02-19")
         ),
       S.listItem()

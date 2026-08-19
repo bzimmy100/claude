@@ -12,5 +12,7 @@ export default async function UsHomePage() {
   });
   const page = data as PageDoc;
 
-  return <PageBuilder blocks={page?.pageBuilder} variant="us" base="/us" />;
+  return (
+    <PageBuilder blocks={page?.pageBuilder} variant="us" lang="en" base="/us" />
+  );
 }

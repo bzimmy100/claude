@@ -10,18 +10,37 @@ import {
   Newspaper,
 } from "lucide-react";
 
+/* Alle tekstvelden zijn "locale"-velden: NL met daaronder EN.
+   Zo delen beide talen automatisch dezelfde pagina-opbouw en hoeft
+   alleen de inhoud vertaald te worden. */
+
+const titlePreview = {
+  select: { nl: "title.nl", en: "title.en" },
+  prepare: ({ nl, en }: { nl?: string; en?: string }, subtitle?: string) => ({
+    title: nl ?? en ?? subtitle,
+    subtitle,
+  }),
+};
+
+const preview = (subtitle: string) => ({
+  select: titlePreview.select,
+  prepare: (sel: { nl?: string; en?: string }) =>
+    titlePreview.prepare(sel, subtitle),
+});
+
 /* Eén knop/link, gebruikt in hero en CTA-banner. */
 export const cta = defineType({
   name: "cta",
   title: "Knop",
   type: "object",
   fields: [
-    defineField({ name: "label", title: "Tekst", type: "string" }),
+    defineField({ name: "label", title: "Tekst", type: "localeString" }),
     defineField({
       name: "href",
       title: "Link",
-      type: "string",
-      description: "Interne link (bijv. /science) of externe URL",
+      type: "localeString",
+      description:
+        "Interne link (bijv. /wetenschap — EN-veld: /science) of externe URL. EN leeg = zelfde als NL.",
     }),
   ],
 });
@@ -32,9 +51,9 @@ export const hero = defineType({
   type: "object",
   icon: Sun,
   fields: [
-    defineField({ name: "kicker", title: "Bovenregel", type: "string" }),
-    defineField({ name: "title", title: "Titel", type: "string" }),
-    defineField({ name: "text", title: "Tekst", type: "text", rows: 3 }),
+    defineField({ name: "kicker", title: "Bovenregel", type: "localeString" }),
+    defineField({ name: "title", title: "Titel", type: "localeString" }),
+    defineField({ name: "text", title: "Tekst", type: "localeText" }),
     defineField({
       name: "image",
       title: "Afbeelding",
@@ -44,10 +63,7 @@ export const hero = defineType({
     defineField({ name: "primaryCta", title: "Primaire knop", type: "cta" }),
     defineField({ name: "secondaryCta", title: "Secundaire knop", type: "cta" }),
   ],
-  preview: {
-    select: { title: "title" },
-    prepare: ({ title }) => ({ title: title ?? "Hero", subtitle: "Hero" }),
-  },
+  preview: preview("Hero"),
 });
 
 export const imageText = defineType({
@@ -56,13 +72,8 @@ export const imageText = defineType({
   type: "object",
   icon: ImageIcon,
   fields: [
-    defineField({ name: "title", title: "Titel", type: "string" }),
-    defineField({
-      name: "body",
-      title: "Tekst",
-      type: "array",
-      of: [{ type: "block" }],
-    }),
+    defineField({ name: "title", title: "Titel", type: "localeString" }),
+    defineField({ name: "body", title: "Tekst", type: "localeRichText" }),
     defineField({
       name: "image",
       title: "Afbeelding",
@@ -77,14 +88,7 @@ export const imageText = defineType({
       initialValue: "rechts",
     }),
   ],
-  preview: {
-    select: { title: "title", media: "image" },
-    prepare: ({ title, media }) => ({
-      title: title ?? "Tekst + afbeelding",
-      subtitle: "Tekst + afbeelding",
-      media,
-    }),
-  },
+  preview: preview("Tekst + afbeelding"),
 });
 
 export const featureGrid = defineType({
@@ -93,8 +97,8 @@ export const featureGrid = defineType({
   type: "object",
   icon: LayoutGrid,
   fields: [
-    defineField({ name: "title", title: "Titel", type: "string" }),
-    defineField({ name: "intro", title: "Intro", type: "text", rows: 2 }),
+    defineField({ name: "title", title: "Titel", type: "localeString" }),
+    defineField({ name: "intro", title: "Intro", type: "localeText" }),
     defineField({
       name: "items",
       title: "Voordelen",
@@ -105,23 +109,15 @@ export const featureGrid = defineType({
           name: "featureItem",
           fields: [
             defineField({ name: "emoji", title: "Emoji", type: "string" }),
-            defineField({ name: "title", title: "Titel", type: "string" }),
-            defineField({ name: "text", title: "Tekst", type: "text", rows: 2 }),
+            defineField({ name: "title", title: "Titel", type: "localeString" }),
+            defineField({ name: "text", title: "Tekst", type: "localeText" }),
           ],
-          preview: {
-            select: { title: "title", subtitle: "emoji" },
-          },
+          preview: preview("Voordeel"),
         },
       ],
     }),
   ],
-  preview: {
-    select: { title: "title" },
-    prepare: ({ title }) => ({
-      title: title ?? "Voordelen-grid",
-      subtitle: "Voordelen-grid",
-    }),
-  },
+  preview: preview("Voordelen-grid"),
 });
 
 export const stats = defineType({
@@ -130,7 +126,7 @@ export const stats = defineType({
   type: "object",
   icon: BarChart3,
   fields: [
-    defineField({ name: "title", title: "Titel", type: "string" }),
+    defineField({ name: "title", title: "Titel", type: "localeString" }),
     defineField({
       name: "items",
       title: "Cijfers",
@@ -140,18 +136,25 @@ export const stats = defineType({
           type: "object",
           name: "statItem",
           fields: [
-            defineField({ name: "value", title: "Waarde", type: "string" }),
-            defineField({ name: "label", title: "Omschrijving", type: "string" }),
+            defineField({ name: "value", title: "Waarde", type: "localeString" }),
+            defineField({
+              name: "label",
+              title: "Omschrijving",
+              type: "localeString",
+            }),
           ],
-          preview: { select: { title: "value", subtitle: "label" } },
+          preview: {
+            select: { nl: "value.nl", en: "value.en", sub: "label.nl" },
+            prepare: ({ nl, en, sub }) => ({
+              title: nl ?? en,
+              subtitle: sub,
+            }),
+          },
         },
       ],
     }),
   ],
-  preview: {
-    select: { title: "title" },
-    prepare: ({ title }) => ({ title: title ?? "Cijfers", subtitle: "Cijfers" }),
-  },
+  preview: preview("Cijfers"),
 });
 
 export const testimonials = defineType({
@@ -160,7 +163,7 @@ export const testimonials = defineType({
   type: "object",
   icon: MessageSquareQuote,
   fields: [
-    defineField({ name: "title", title: "Titel", type: "string" }),
+    defineField({ name: "title", title: "Titel", type: "localeString" }),
     defineField({
       name: "items",
       title: "Reviews",
@@ -170,19 +173,18 @@ export const testimonials = defineType({
           type: "object",
           name: "testimonialItem",
           fields: [
-            defineField({ name: "quote", title: "Quote", type: "text", rows: 3 }),
+            defineField({ name: "quote", title: "Quote", type: "localeText" }),
             defineField({ name: "name", title: "Naam", type: "string" }),
-            defineField({ name: "role", title: "Functie", type: "string" }),
+            defineField({ name: "role", title: "Functie", type: "localeString" }),
           ],
-          preview: { select: { title: "name", subtitle: "quote" } },
+          preview: {
+            select: { title: "name", subtitle: "quote.nl" },
+          },
         },
       ],
     }),
   ],
-  preview: {
-    select: { title: "title" },
-    prepare: ({ title }) => ({ title: title ?? "Reviews", subtitle: "Reviews" }),
-  },
+  preview: preview("Reviews"),
 });
 
 export const faq = defineType({
@@ -191,7 +193,7 @@ export const faq = defineType({
   type: "object",
   icon: HelpCircle,
   fields: [
-    defineField({ name: "title", title: "Titel", type: "string" }),
+    defineField({ name: "title", title: "Titel", type: "localeString" }),
     defineField({
       name: "items",
       title: "Vragen",
@@ -201,23 +203,26 @@ export const faq = defineType({
           type: "object",
           name: "faqItem",
           fields: [
-            defineField({ name: "question", title: "Vraag", type: "string" }),
+            defineField({
+              name: "question",
+              title: "Vraag",
+              type: "localeString",
+            }),
             defineField({
               name: "answer",
               title: "Antwoord",
-              type: "array",
-              of: [{ type: "block" }],
+              type: "localeRichText",
             }),
           ],
-          preview: { select: { title: "question" } },
+          preview: {
+            select: { nl: "question.nl", en: "question.en" },
+            prepare: ({ nl, en }) => ({ title: nl ?? en }),
+          },
         },
       ],
     }),
   ],
-  preview: {
-    select: { title: "title" },
-    prepare: ({ title }) => ({ title: title ?? "FAQ", subtitle: "FAQ" }),
-  },
+  preview: preview("FAQ"),
 });
 
 export const ctaBanner = defineType({
@@ -226,17 +231,11 @@ export const ctaBanner = defineType({
   type: "object",
   icon: Megaphone,
   fields: [
-    defineField({ name: "title", title: "Titel", type: "string" }),
-    defineField({ name: "text", title: "Tekst", type: "text", rows: 2 }),
+    defineField({ name: "title", title: "Titel", type: "localeString" }),
+    defineField({ name: "text", title: "Tekst", type: "localeText" }),
     defineField({ name: "cta", title: "Knop", type: "cta" }),
   ],
-  preview: {
-    select: { title: "title" },
-    prepare: ({ title }) => ({
-      title: title ?? "Call-to-action",
-      subtitle: "Call-to-action",
-    }),
-  },
+  preview: preview("Call-to-action"),
 });
 
 export const articleList = defineType({
@@ -245,7 +244,7 @@ export const articleList = defineType({
   type: "object",
   icon: Newspaper,
   fields: [
-    defineField({ name: "title", title: "Titel", type: "string" }),
+    defineField({ name: "title", title: "Titel", type: "localeString" }),
     defineField({
       name: "max",
       title: "Maximum aantal",
@@ -253,13 +252,7 @@ export const articleList = defineType({
       initialValue: 3,
     }),
   ],
-  preview: {
-    select: { title: "title" },
-    prepare: ({ title }) => ({
-      title: title ?? "Laatste artikelen",
-      subtitle: "Laatste artikelen (automatisch gevuld)",
-    }),
-  },
+  preview: preview("Laatste artikelen (automatisch gevuld)"),
 });
 
 /* Het bouwblokken-veld dat elke pagina gebruikt. */

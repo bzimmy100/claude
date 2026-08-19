@@ -19,5 +19,7 @@ export default async function UsSubPage({
   const page = data as PageDoc;
   if (!page) notFound();
 
-  return <PageBuilder blocks={page.pageBuilder} variant="us" base="/us" />;
+  return (
+    <PageBuilder blocks={page.pageBuilder} variant="us" lang="en" base="/us" />
+  );
 }

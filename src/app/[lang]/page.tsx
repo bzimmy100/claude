@@ -18,6 +18,11 @@ export default async function HomePage({
   const page = data as PageDoc;
 
   return (
-    <PageBuilder blocks={page?.pageBuilder} variant="eu" base={`/${lang}`} />
+    <PageBuilder
+      blocks={page?.pageBuilder}
+      variant="eu"
+      lang={lang as "nl" | "en"}
+      base={`/${lang}`}
+    />
   );
 }

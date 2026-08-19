@@ -1,8 +1,13 @@
 import { defineQuery } from "next-sanity";
 
+/* Pagina's matchen op taal-specifieke slug:
+   NL gebruikt `slug`, EN gebruikt `slugEn` en valt terug op `slug`. */
 export const PAGE_QUERY = defineQuery(`
-  *[_type == "page" && market == $market && language == $language && slug.current == $slug][0]{
-    _id, title, slug, market, language,
+  *[_type == "page" && market == $market && (
+    ($language == "nl" && slug.current == $slug) ||
+    ($language != "nl" && coalesce(slugEn.current, slug.current) == $slug)
+  )][0]{
+    _id, title, slug, market,
     pageBuilder[]{
       ...,
       _type == "articleList" => {
@@ -30,16 +35,10 @@ export const SETTINGS_QUERY = defineQuery(`
   }
 `);
 
-/* Het menu volgt automatisch de pagina's van de site/taal. */
+/* Het menu volgt automatisch de pagina's van de site. */
 export const NAV_QUERY = defineQuery(`
-  *[_type == "page" && market == $market && language == $language
-    && slug.current != "home"] | order(coalesce(navOrder, 99) asc, title asc){
-    _id, title, "slug": slug.current
+  *[_type == "page" && market == $market && slug.current != "home"]
+    | order(coalesce(navOrder, 99) asc, title.nl asc){
+    _id, title, "slug": slug.current, "slugEn": slugEn.current
   }
-`);
-
-/* Vind de vertaling van een pagina, voor de taalwissel in de navigatie. */
-export const PAGE_TRANSLATIONS_QUERY = defineQuery(`
-  *[_type == "translation.metadata" && references($id)][0]
-    .translations[]{ "language": _key, "slug": @.value->slug.current }
 `);
