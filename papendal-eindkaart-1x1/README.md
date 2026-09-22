@@ -43,14 +43,24 @@ of `donker` kiezen; dat is puur voorbeeldweergave en komt niet in de export.
 ## Video exporteren (MOV met alfakanaal)
 
 ```bash
-./render-mov.sh 25     # of 30
+./render-mov.sh 25            # QuickTime Animation, verliesloos (standaard)
+./render-mov.sh 30 prores     # ProRes 4444, als de montage dat vraagt
 ```
 
-Levert `export/Papendal-Eindkaart-1x1-alpha-25fps.mov`: 1080 x 1080, ProRes 4444,
-`yuva444p10le`, 2,8 seconden. De achtergrond is volledig transparant, dus de kaart
-kan zo over eigen beeld in de montage.
+Levert `export/Papendal-Eindkaart-1x1-alpha-25fps.mov`: 1080 x 1080, 2,8 seconden,
+met een volledig transparante achtergrond, dus de kaart kan zo over eigen beeld
+in de montage.
+
+| Codec | Grootte bij 25 fps | Kwaliteit |
+| --- | --- | --- |
+| `qtrle` (QuickTime Animation) | ongeveer 5 MB | verliesloos, bit voor bit gelijk aan de bron |
+| `prores` (ProRes 4444) | ongeveer 29 MB | visueel verliesloos |
+
+Voor vlakke graphics als deze is `qtrle` de betere keuze: verliesloos en toch
+vijf keer kleiner. Premiere, After Effects, Resolve en Final Cut lezen beide
+formaten met alfakanaal.
 
 De renderer zet de scene stil per frame via het `data-om-seek-to-time-frame`
-event van de engine, zodat elk frame exact op zijn tijdstip staat en er niets
-wordt overgeslagen. `export/` staat in `.gitignore`; de videobestanden zijn
-afgeleid materiaal en worden niet meegecommit.
+event van de engine, zodat elk frame exact op zijn tijdstip staat en de opname
+de animatie niet kan inhalen. `export/` staat in `.gitignore`; de videobestanden
+zijn afgeleid materiaal en worden niet meegecommit.
