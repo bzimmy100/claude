@@ -39,3 +39,18 @@ beeld met een persoon in het midden gelegd kan worden.
 gezet. De exporteerbare SVG heeft `bg="transparent"`, waardoor de export een
 alfakanaal houdt. Via het tweaks-paneel kun je tijdens het werken alsnog `foto`
 of `donker` kiezen; dat is puur voorbeeldweergave en komt niet in de export.
+
+## Video exporteren (MOV met alfakanaal)
+
+```bash
+./render-mov.sh 25     # of 30
+```
+
+Levert `export/Papendal-Eindkaart-1x1-alpha-25fps.mov`: 1080 x 1080, ProRes 4444,
+`yuva444p10le`, 2,8 seconden. De achtergrond is volledig transparant, dus de kaart
+kan zo over eigen beeld in de montage.
+
+De renderer zet de scene stil per frame via het `data-om-seek-to-time-frame`
+event van de engine, zodat elk frame exact op zijn tijdstip staat en er niets
+wordt overgeslagen. `export/` staat in `.gitignore`; de videobestanden zijn
+afgeleid materiaal en worden niet meegecommit.
