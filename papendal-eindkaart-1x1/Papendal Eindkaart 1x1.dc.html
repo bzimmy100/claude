@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<meta name="ext-resource-dependency" content="./papendal-logo.png" data-resource-id="papendalLogo" />
+<meta name="ext-resource-dependency" content="./motif-lijnen.png" data-resource-id="motifLijnen" />
+<meta name="ext-resource-dependency" content="./preview-man.png" data-resource-id="previewMan" />
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1a1a; }
+  a { color: #F1740E; } a:hover { color: #ffffff; }
+</style>
+<script>window.OM_SCENES = '[{"name":"Eindkaart","dur":2.8,"nat":4}]';</script>
+<script>window.OM_PLAYBACK = '{"mode":"times","count":1}';</script>
+<script>window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "motionEditor": true,
+  "previewBg": "geen"
+}/*EDITMODE-END*/;</script>
+</helmet>
+<x-import component-from-global-scope="PapendalEndCardSquare" from="./animations-v2.jsx ./tweaks-panel.jsx ./eindkaart-scene-1x1.jsx" hint-size="100%,100vh"></x-import>
+</x-dc>
+<template id="__bundler_thumbnail" data-bg-color="#0D0D0D">
+  <svg viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1080" height="1080" fill="#0D0D0D"/>
+    <rect x="270" y="440" width="540" height="34" rx="8" fill="#ffffff"/>
+    <rect x="270" y="520" width="380" height="34" rx="8" fill="#F1740E"/>
+  </svg>
+</template>
+</body>
+</html>
